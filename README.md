@@ -7,17 +7,30 @@ Better way to open native app from your mobile web site.
 ```javascript
 const SCHEME = {
     TWITTER: {
-        IOS:     'twitter://post?message={{TEXT}}',
-        ANDROID: 'intent://post?message={{TEXT}}#Intent;scheme=twitter;package=com.twitter.android;end;'
+        SHARE: {
+            IOS:     'twitter://post?message={{TEXT}}',
+            ANDROID: 'intent://post?message={{TEXT}}#Intent;scheme=twitter;package=com.twitter.android;end;'
+        }
     },
     FACEBOOK: {
-        // NOT AVAILABLE
-        // 探せば見つかるかもしれない
-        // 私はココロが折れました
+        SHARE: {
+            // 探せば見つかるかもしれないが私はココロが折れました
+            // そしてコレがないのは中々に辛い
+        },
+        SHOW_PROFILE: {
+            IOS:     'fb://profile/{{USER_ID}}',
+            ANDROID: ''
+        }
     },
     LINE: {
-        IOS:     'line://msg/text/{{TEXT}}',
-        ANDROID: 'intent://msg/text/{{TEXT}}#Intent;scheme=line;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=jp.naver.line.android;end;'
+        SHARE: {
+            IOS:     'line://msg/text/{{TEXT}}',
+            ANDROID: 'intent://msg/text/{{TEXT}}#Intent;scheme=line;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=jp.naver.line.android;end;'
+        },
+        ADD_FRIEND: {
+            IOS:     'line://ti/p/{{USER_ID}}',
+            ANDROID: 'intent://ti/p/{{USER_ID}}#Intent;scheme=line;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=jp.naver.line.android;end;'
+        }
     }
 }
 ```
