@@ -1,4 +1,17 @@
-(function(global) {
+(function(global, factory) {
+    'use strict';
+
+    if (typeof define === 'function' && define.amd) {
+        define([], function() {
+            return factory(global, {});
+        });
+    } else if ('process' in global) {
+        throw new Error('This module is only for browsers.');
+    } else {
+        global.AppOpener = factory(global, {});
+    }
+
+}((this.self || global), function(global, AppOpener, undefined) {
     'use strict';
 
     /**
@@ -221,6 +234,6 @@
         }
     };
 
-    global.AppOpener = AppOpener;
+    return AppOpener;
 
-}(window));
+}));
