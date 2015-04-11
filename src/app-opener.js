@@ -1,24 +1,14 @@
 (function(global) {
     'use strict';
 
-    var SCHEME = {
-        TWITTER: {
-            IOS:     'twitter://post?message={{TEXT}}',
-            ANDROID: 'intent://post?message={{TEXT}}#Intent;scheme=twitter;package=com.twitter.android;end;'
-        },
-        FACEBOOK: {
-        },
-        LINE: {
-            IOS:     'line://msg/text/{{TEXT}}',
-            ANDROID: 'intent://msg/text/{{TEXT}}#Intent;scheme=line;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=jp.naver.line.android;end;'
-        }
-    };
-
+    /**
+     * 実行環境を判別するためのUtil
+     * 処理は見ての通り。
+     *
+     */
     var Util = {
-        // いわずもがな
         ua: navigator.userAgent.toLowerCase(),
 
-        // 以下、環境を判別する関数が続く
         isIOS: function () {
             return -1 !== this.ua.indexOf('iphone') || -1 !== this.ua.indexOf('ipod') || -1 !== this.ua.indexOf('ipad');
         },
@@ -26,13 +16,22 @@
             return -1 !== this.ua.indexOf('android');
         },
         isAndroidChrome: function () {
-            // S Browserとかいう標準ブラウザのくせにUAにchromeって入るヤツがいる！
-            // それと見分けるために、versionも見る...
+            // NOTE:
+            // S Browserとかいう標準ブラウザのくせにUAに"chrome"って入るヤツがいる！
+            // それと見分けるために、"version"って文字列もチェック...
             return -1 !== this.ua.indexOf('mobile') && -1 !== this.ua.indexOf('chrome') && -1 === this.ua.indexOf('version');
         },
         isiOSChrome: function () {
             return -1 !== this.ua.indexOf('crios');
         },
+
+        /**
+         * 実行環境を配列で取得
+         *
+         * @return {Array}
+         *     ['OS名', 'デフォルトでない場合のBROWSER名']
+         *
+         */
         getEnvArr: function() {
             var strArr = [];
 
@@ -50,34 +49,59 @@
             }
 
             return strArr;
-        },
-        fixScheme: function(schemeStr, shareText) {
-            return schemeStr.replace('{{TEXT}}', encodeURIComponent(shareText));
         }
     };
 
-    var NativeSharer = global.NativeSharer = function(options) {
-        // 何かあったときに逃すURL
-        // ただ、出番はほぼないはず
+    /**
+     *
+     * いわゆるURIスキーマやインテントをWebから開くことができます。
+     * iOS/Androidに対応し、それぞれ最適な方法でアプリを開きます。
+     *
+     * @class AppOpener
+     *
+     * @param {Object} options
+     * @param {String} options.schemeStr
+     *     開きたいURIスキーマ or インテント文字列
+     * @param {String} options.fallbackUrl
+     *     万が一、何かあったときに逃すURL
+     * @param {Number} options.iOSFastestAppBootTime
+     *     URIスキーマ踏んで、アプリが立ち上がりブラウザがサスペンドされるまでの最速タイム
+     *     これが高いと、アプリがない端末でアプリが入っている扱いになる可能性が上がる
+     *     これが低いと、アプリがある端末でアプリが入ってない扱いになる可能性が上がる
+     *
+     */
+    var AppOpener = function(options) {
+        // 必須
+        this.schemeStr   = options.schemeStr   || null;
         this.fallbackUrl = options.fallbackUrl || null;
-        // URIスキーマ踏んで、アプリが立ち上がりブラウザがサスペンドされるまでの最速タイム
-        // この数値を高くすると、アプリがない端末でもアプリが入っている扱いになる可能性が上がる
-        // この数値を低くすると、アプリがある端末でもアプリが入ってない扱いになる可能性が上がる
+
+        // オプション
         this.iOSFastestAppBootTime = options.iOSFastestAppBootTime || 20;
 
-        this.envArr = Util.getEnvArr();
+        // 処理の判定のための文字列を取っとく
+        this.envStr = Util.getEnvArr().join('_');
 
         // 引数および実行環境を調べる
         if (this._isExecutable() === false) {
             this._exit();
+        } else {
+            this._execute();
         }
     };
 
-    NativeSharer.prototype = {
-        constructor: NativeSharer,
+    AppOpener.prototype = {
+        constructor: AppOpener,
+        /**
+         *
+         * 想定外の踏まれ方や呼び出し方をされていた場合に落とす処理
+         *
+         * @return {Boolean}
+         *     実行可能ならtrue
+         *
+         */
         _isExecutable: function() {
             // 引数足りてない
-            if (this.fallbackUrl === null) {
+            if (this.fallbackUrl === null || this.schemeStr === null) {
                 return false;
             }
 
@@ -88,20 +112,16 @@
 
             return true;
         },
-        toTwitter: function(shareText) {
-            var schemeStr = SCHEME['TWITTER'][this.envArr[0]];
-            this.toCustom(Util.fixScheme(schemeStr, shareText));
-        },
-        toFacebook: function(shareText) {
-            var schemeStr = SCHEME['FACEBOOK'][this.envArr[0]];
-            this.toCustom(Util.fixScheme(schemeStr, shareText));
-        },
-        toLINE: function(shareText) {
-            var schemeStr = SCHEME['LINE'][this.envArr[0]];
-            this.toCustom(Util.fixScheme(schemeStr, shareText));
-        },
-        toCustom: function(schemeStr) {
-            switch (this.envArr.join('_')) {
+
+        /**
+         *
+         * 実際にアプリを呼び出す処理を、環境別に切り分けて呼ぶ
+         *
+         */
+        _execute: function() {
+            var schemeStr = this.schemeStr;
+
+            switch (this.envStr) {
             case 'IOS':
             case 'IOS_CHROME':
                 this._iOSHandler(schemeStr);
@@ -117,23 +137,54 @@
                 break;
             }
         },
-        // 標準ブラウザならiframeでも動くが、SBrowserをChromeとしない場合に動かないので、
-        // どちらでも動く方式を選ぶことにした
+
+        /**
+         *
+         * Android標準ブラウザ用の処理
+         *
+         * 実は標準ブラウザならiframe方式でも動く。
+         * が、SBrowserをChromeとしない場合には動かないので、
+         * どちらでも動くこっちの方式を選ぶことにした
+         *
+         * @param {String} schemeStr
+         *     実行したいURIスキーマ or インテント
+         *
+         */
         _androidHandler: function(schemeStr) {
             location.replace(schemeStr);
+
             setTimeout(function() {
                 history.back();
             }, 0);
 
             // Androidは未インストールの場合、GooglePlayが開く
         },
+
+        /**
+         *
+         * Android Chrome用の処理
+         *
+         * @param {String} schemeStr
+         *     実行したいURIスキーマ or インテント
+         *
+         */
         _androidChromeHandler: function(schemeStr) {
             location.replace(schemeStr);
 
             // Androidは未インストールの場合、GooglePlayが開く
         },
-        // iOSは未インストールの場合、このschemeを処理できない旨のアラートが表示されてしまうので、
-        // iframe内で処理することでそれを回避
+
+        /**
+         *
+         * iOS Safari / iOS Chrome用の処理
+         *
+         * iOSは未インストールの場合、このschemeを処理できない旨のアラートが表示されてしまうので、
+         * iframe内で処理することでそれを回避する。
+         *
+         * @param {String} schemeStr
+         *     実行したいURIスキーマ or インテント
+         *
+         */
         _iOSHandler: function(schemeStr) {
             // iframeをDOMに落とす"前に"時間を保存する
             var start = Date.now();
@@ -157,9 +208,19 @@
                 history.back();
             }
         },
+
+        /**
+         *
+         * 緊急離脱の処理
+         *
+         * サーバーサイドで制限すればそもそも心配いらないはず・・。
+         *
+         */
         _exit: function() {
             location.replace(this.fallbackUrl);
         }
     };
+
+    global.AppOpener = AppOpener;
 
 }(window));
