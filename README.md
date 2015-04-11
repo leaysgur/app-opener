@@ -2,14 +2,42 @@
 Better way to open native app from your mobile web site.
 
 ## How to use
-```javascript
-new AppOpener({
-    schemeStr:   'twitter://post?message=' + encodeURIComponent('これでWebからアプリが呼べたよ！！ https://github.com/leader22/app-opener'),
-    fallbackUrl: 'http://lealog.net'
-});
+
+### index.html
+```html
+<a href="share-tw.html">Share to Twitter</a>
 ```
 
-## Sample scheme
+Be careful NOT to set ``target="_blank"``.
+
+
+### share-tw.html
+```html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Share to Twitter app</title>
+</head>
+<body>
+<script src="app-opener/dist/app-opener.min.js"></script>
+<script>
+var isAndroid = navigator.userAgent.toLowerCase().indexOf('android') !== -1;
+var shareText = encodeURIComponent('Webからアプリが開いたよ！！ @leader22++ https://github.com/leader22/app-opener') + ' ';
+var schemeStr = (isAndroid) ? 'intent://post?message=' + shareText + '#Intent;scheme=twitter;package=com.twitter.android;end;'
+                            : 'twitter://post?message=' + shareText;
+new AppOpener({
+    schemeStr:   schemeStr,
+    fallbackUrl: 'http://lealog.net'
+});
+</script>
+</body>
+</html>
+```
+
+Please try [demo](http://labs.lealog.net/app-opener-sample/).
+
+## Scheme example
 
 ```javascript
 const SCHEME = {
