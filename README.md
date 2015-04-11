@@ -1,6 +1,13 @@
 # app-opener
 Better way to open native app from your mobile web site.
 
+## How to use
+```javascript
+new AppOpener({
+    schemeStr:   'twitter://post?message=' + encodeURIComponent('これでWebからアプリが呼べたよ！！ https://github.com/leader22/app-opener'),
+    fallbackUrl: 'http://lealog.net'
+});
+```
 
 ## Sample scheme
 
