@@ -83,7 +83,7 @@
      *     これが低いと、アプリがある端末でアプリが入ってない扱いになる可能性が上がる
      *
      */
-    var AppOpener = function(options) {
+    AppOpener = function(options) {
         // 必須
         this.schemeStr   = options.schemeStr   || null;
         this.fallbackUrl = options.fallbackUrl || null;

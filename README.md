@@ -35,6 +35,17 @@ new AppOpener({
 </html>
 ```
 
+## Options
+### options.schemeStr
+[Required] Uri scheme strings you want to open.
+
+### options.fallbackUrl
+[Required] Url to fallback at invalid situation.
+
+### options.iOSFastestAppBootTime
+[Default] 20
+[options] The time that it takes for the app to boot.
+
 Please try [demo](http://labs.lealog.net/app-opener-sample/).
 
 ## Scheme example
