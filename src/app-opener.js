@@ -118,8 +118,8 @@
                 return false;
             }
 
-            // 直打ちはスルー
-            if (document.referrer.length === 0 || history.length === 0) {
+            // 戻れないなら来てはいけない
+            if (history.length === 0) {
                 return false;
             }
 
