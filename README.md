@@ -37,14 +37,18 @@ new AppOpener({
 
 ## Options
 ### options.schemeStr
-[Required] Uri scheme strings you want to open.
+[Required] {String} Uri scheme strings you want to open.
 
 ### options.fallbackUrl
-[Required] Url to fallback at invalid situation.
+[Required] {String} Url to fallback at invalid situation.
 
 ### options.iOSFastestAppBootTime
 [Default] 20
-[options] The time that it takes for the app to boot.
+[options] {Number} The time that it takes for the app to boot.
+
+### options.iOSNotInstalledFunc
+[Default] alert('See code ;o')
+[options] {Function} Executed at app could not boot on iOS.
 
 Please try [demo](http://labs.lealog.net/app-opener-sample/).
 
