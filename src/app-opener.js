@@ -62,6 +62,14 @@
             }
 
             return strArr;
+        },
+
+        /**
+         * iOSで未インストールと判断された時に実行される関数
+         *
+         */
+        iOSNotInstalledFunc: function() {
+            alert('アプリがインストールされてないか、\nもしくは何か問題が発生したため、\nアプリを開けませんでした。');
         }
     };
 
@@ -81,6 +89,8 @@
      *     URIスキーマ踏んで、アプリが立ち上がりブラウザがサスペンドされるまでの最速タイム
      *     これが高いと、アプリがない端末でアプリが入っている扱いになる可能性が上がる
      *     これが低いと、アプリがある端末でアプリが入ってない扱いになる可能性が上がる
+     * @param {Function} options.iOSNotInstalledFunc
+     *     iOSで未インストールと判断された時に実行される関数
      *
      */
     AppOpener = function(options) {
@@ -90,6 +100,7 @@
 
         // オプション
         this.iOSFastestAppBootTime = options.iOSFastestAppBootTime || 20;
+        this.iOSNotInstalledFunc   = options.iOSNotInstalledFunc   || Util.iOSNotInstalledFunc;
 
         // 処理の判定のための文字列を取っとく
         this.envStr = Util.getEnvArr().join('_');
@@ -213,7 +224,7 @@
 
             // ゆえにココがすぐさま実行される = サスペンドされなかった = アプリ入ってない
             if (Date.now() - start < this.iOSFastestAppBootTime) {
-                alert('アプリがインストールされてないか、\nもしくは何か問題が発生したため、\nアプリを開けませんでした。');
+                this.iOSNotInstalledFunc();
                 history.back();
             }
             // アプリ入ってた = ブラウザに戻ってきたタイミングで直前に戻す
