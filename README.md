@@ -27,8 +27,8 @@ var shareText = encodeURIComponent('Webからアプリが開いたよ！！ @lea
 var schemeStr = (isAndroid) ? 'intent://post?message=' + shareText + '#Intent;scheme=twitter;package=com.twitter.android;end;'
                             : 'twitter://post?message=' + shareText;
 new AppOpener({
-    schemeStr:   schemeStr,
-    fallbackUrl: 'http://lealog.net'
+    schemeStr: schemeStr,
+    escapeUrl: 'http://lealog.net'
 });
 </script>
 </body>
@@ -39,8 +39,8 @@ new AppOpener({
 ### options.schemeStr
 [Required] {String} Uri scheme strings you want to open.
 
-### options.fallbackUrl
-[Required] {String} Url to fallback at invalid situation.
+### options.escapeUrl
+[Required] {String} Url to escape at after app opened or invalid situation.
 
 ### options.iOSFastestAppBootTime
 [Default] 20

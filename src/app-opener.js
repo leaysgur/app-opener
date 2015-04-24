@@ -84,7 +84,7 @@
      * @param {String} options.schemeStr
      *     開きたいURIスキーマ or インテント文字列
      * @param {String} options.escapeUrl
-     *     万が一、何かあったときに逃すURL
+     *     万が一、何かあったときや、ブラウザに戻ったときに逃す先のURL
      * @param {Number} options.iOSFastestAppBootTime
      *     URIスキーマ踏んで、アプリが立ち上がりブラウザがサスペンドされるまでの最速タイム
      *     これが高いと、アプリがない端末でアプリが入っている扱いになる可能性が上がる
