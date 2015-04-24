@@ -83,7 +83,7 @@
      * @param {Object} options
      * @param {String} options.schemeStr
      *     開きたいURIスキーマ or インテント文字列
-     * @param {String} options.fallbackUrl
+     * @param {String} options.escapeUrl
      *     万が一、何かあったときに逃すURL
      * @param {Number} options.iOSFastestAppBootTime
      *     URIスキーマ踏んで、アプリが立ち上がりブラウザがサスペンドされるまでの最速タイム
@@ -95,8 +95,8 @@
      */
     AppOpener = function(options) {
         // 必須
-        this.schemeStr   = options.schemeStr   || null;
-        this.fallbackUrl = options.fallbackUrl || null;
+        this.schemeStr = options.schemeStr || null;
+        this.escapeUrl = options.escapeUrl || null;
 
         // オプション
         this.iOSFastestAppBootTime = options.iOSFastestAppBootTime || 20;
@@ -125,12 +125,7 @@
          */
         _isExecutable: function() {
             // 引数足りてない
-            if (this.fallbackUrl === null || this.schemeStr === null) {
-                return false;
-            }
-
-            // 戻れないなら来てはいけない
-            if (history.length === 0) {
+            if (this.escapeUrl === null || this.schemeStr === null) {
                 return false;
             }
 
@@ -177,9 +172,8 @@
         _androidHandler: function(schemeStr) {
             location.replace(schemeStr);
 
-            setTimeout(function() {
-                history.back();
-            }, 0);
+            var that = this;
+            setTimeout(function() { that._exit(); }, 0);
 
             // Androidは未インストールの場合、GooglePlayが開く
         },
@@ -225,11 +219,11 @@
             // ゆえにココがすぐさま実行される = サスペンドされなかった = アプリ入ってない
             if (Date.now() - start < this.iOSFastestAppBootTime) {
                 this.iOSNotInstalledFunc();
-                history.back();
+                this._exit();
             }
-            // アプリ入ってた = ブラウザに戻ってきたタイミングで直前に戻す
+            // アプリ入ってた = ブラウザに戻ってきたタイミングで逃がす
             else {
-                history.back();
+                this._exit();
             }
         },
 
@@ -241,7 +235,7 @@
          *
          */
         _exit: function() {
-            location.replace(this.fallbackUrl);
+            location.replace(this.escapeUrl);
         }
     };
 
