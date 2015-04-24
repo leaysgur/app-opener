@@ -28,7 +28,7 @@ var schemeStr = (isAndroid) ? 'intent://post?message=' + shareText + '#Intent;sc
                             : 'twitter://post?message=' + shareText;
 new AppOpener({
     schemeStr: schemeStr,
-    escapeUrl: 'http://lealog.net'
+    escapeUrl: 'index.html'
 });
 </script>
 </body>
