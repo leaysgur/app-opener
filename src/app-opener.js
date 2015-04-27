@@ -69,6 +69,10 @@
      *     開きたいURIスキーマ or インテント文字列
      * @param {String} options.escapeUrl
      *     万が一、何かあったときや、ブラウザに戻ったときに逃す先のURL
+     * @param {Number} options.androidSlowestAppBootTime
+     *     URIスキーマ踏んで、アプリが立ち上がりブラウザがサスペンドされるまでの最遅タイム
+     *     これが低いと、アプリ起動中に処理が実行されてなぜか無視される
+     *     アプリ側に完全に主導権が移るまで待って、こっそり裏で処理を実行する必要がある
      * @param {Number} options.iOSFastestAppBootTime
      *     URIスキーマ踏んで、アプリが立ち上がりブラウザがサスペンドされるまでの最速タイム
      *     これが高いと、アプリがない端末でアプリが入っている扱いになる可能性が上がる
@@ -83,8 +87,9 @@
         this.escapeUrl = options.escapeUrl || null;
 
         // オプション
-        this.iOSFastestAppBootTime = options.iOSFastestAppBootTime || 20;
-        this.iOSNotInstalledFunc   = options.iOSNotInstalledFunc   || Util.iOSNotInstalledFunc;
+        this.androidSlowestAppBootTime = options.androidSlowestAppBootTime || 500;
+        this.iOSFastestAppBootTime     = options.iOSFastestAppBootTime     || 20;
+        this.iOSNotInstalledFunc       = options.iOSNotInstalledFunc       || Util.iOSNotInstalledFunc;
 
         // 処理の判定のための文字列を取っとく
         this.envStr = Util.getEnvStr();
@@ -153,7 +158,7 @@
             location.replace(schemeStr);
 
             var that = this;
-            setTimeout(function() { that._exit(); }, 0);
+            setTimeout(function() { that._exit(); }, this.androidSlowestAppBootTime);
 
             // Androidは未インストールの場合、GooglePlayが開く
         },

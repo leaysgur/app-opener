@@ -42,9 +42,15 @@ new AppOpener({
 ### options.escapeUrl
 [Required] {String} Url to escape at after app opened or invalid situation.
 
+### options.androidSlowestAppBootTime
+[Default] 500
+
+[options] {Number} The time that it takes for the app to boot completely.
+
 ### options.iOSFastestAppBootTime
 [Default] 20
-[options] {Number} The time that it takes for the app to boot.
+
+[options] {Number} The time that it takes for the app to start boot.
 
 ### options.iOSNotInstalledFunc
 [Default] alert('See code ;o')
