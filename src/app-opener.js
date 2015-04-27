@@ -28,40 +28,24 @@
         isAndroid: function () {
             return -1 !== this.ua.indexOf('android');
         },
-        isAndroidChrome: function () {
-            // NOTE:
-            // S Browserとかいう標準ブラウザのくせにUAに"chrome"って入るヤツがいる！
-            // それと見分けるために、"version"って文字列もチェック...
-            return -1 !== this.ua.indexOf('mobile') && -1 !== this.ua.indexOf('chrome') && -1 === this.ua.indexOf('version');
-        },
-        isiOSChrome: function () {
-            return -1 !== this.ua.indexOf('crios');
-        },
 
         /**
-         * 実行環境を配列で取得
+         * 実行環境を取得
          *
-         * @return {Array}
-         *     ['OS名', 'デフォルトでない場合のBROWSER名']
+         * @return {String}
+         *     IOS or ANDROID
          *
          */
-        getEnvArr: function() {
-            var strArr = [];
+        getEnvStr: function() {
+            var str = '';
 
             if (this.isIOS()) {
-                strArr.push('IOS');
-                if (this.isiOSChrome()) {
-                    strArr.push('CHROME');
-                }
+                str = 'IOS';
             }
             else if (this.isAndroid()) {
-                strArr.push('ANDROID');
-                if (this.isAndroidChrome()) {
-                    strArr.push('CHROME');
-                }
+                str = 'ANDROID';
             }
-
-            return strArr;
+            return str;
         },
 
         /**
@@ -103,7 +87,7 @@
         this.iOSNotInstalledFunc   = options.iOSNotInstalledFunc   || Util.iOSNotInstalledFunc;
 
         // 処理の判定のための文字列を取っとく
-        this.envStr = Util.getEnvArr().join('_');
+        this.envStr = Util.getEnvStr();
 
         // 引数および実行環境を調べる
         if (this._isExecutable() === false) {
@@ -142,14 +126,10 @@
 
             switch (this.envStr) {
             case 'IOS':
-            case 'IOS_CHROME':
                 this._iOSHandler(schemeStr);
                 break;
             case 'ANDROID':
                 this._androidHandler(schemeStr);
-                break;
-            case 'ANDROID_CHROME':
-                this._androidChromeHandler(schemeStr);
                 break;
             default:
                 this._exit();
@@ -174,20 +154,6 @@
 
             var that = this;
             setTimeout(function() { that._exit(); }, 0);
-
-            // Androidは未インストールの場合、GooglePlayが開く
-        },
-
-        /**
-         *
-         * Android Chrome用の処理
-         *
-         * @param {String} schemeStr
-         *     実行したいURIスキーマ or インテント
-         *
-         */
-        _androidChromeHandler: function(schemeStr) {
-            location.replace(schemeStr);
 
             // Androidは未インストールの場合、GooglePlayが開く
         },
