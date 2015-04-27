@@ -235,7 +235,9 @@
          *
          */
         _exit: function() {
-            location.replace(this.escapeUrl);
+            var escapeUrl = this.escapeUrl;
+            // ずらさないとiOS Safari以外で実行されない...
+            setTimeout(function() { location.replace(escapeUrl); }, 0);
         }
     };
 

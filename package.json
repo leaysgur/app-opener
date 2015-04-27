@@ -1,6 +1,6 @@
 {
   "name": "app-opener",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Better way to open native app from your mobile web site.",
   "main": "dist/app-opner.min.js",
   "directories": {
