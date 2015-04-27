@@ -43,13 +43,11 @@ new AppOpener({
 [Required] {String} Url to escape at after app opened or invalid situation.
 
 ### options.androidSlowestAppBootTime
-[Default] 500
-
+[Default] 500  
 [options] {Number} The time that it takes for the app to boot completely.
 
 ### options.iOSFastestAppBootTime
-[Default] 20
-
+[Default] 20  
 [options] {Number} The time that it takes for the app to start boot.
 
 ### options.iOSNotInstalledFunc
@@ -66,6 +64,10 @@ const SCHEME = {
         SHARE: {
             IOS:     'twitter://post?message={{TEXT}}',
             ANDROID: 'intent://post?message={{TEXT}}#Intent;scheme=twitter;package=com.twitter.android;end;'
+        },
+        SHOW_PROFILE: {
+            IOS:     'twitter://user?screen_name={{SCREEN_NAME}}',
+            ANDROID: 'intent://user?screen_name={{SCREEN_NAME}}#Intent;scheme=twitter;package=com.twitter.android;end;'
         }
     },
     FACEBOOK: {
